@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>读三体 · 三体的一站式阅读与体验平台</title>
+<meta name="description" content="三体，从阅读到体验。按纪元编年的导读、宇宙尺度大事年表、星图、设定词典与人物图谱，一站读懂刘慈欣《三体》三部曲的世界观。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2305070d'/%3E%3Ccircle cx='30' cy='30' r='15' fill='none' stroke='%23d05b52' stroke-width='3'/%3E%3Ccircle cx='45' cy='18' r='7' fill='none' stroke='%23cda761' stroke-width='3'/%3E%3Ccircle cx='50' cy='44' r='4' fill='none' stroke='%236ea7d6' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://miaoda.feishu.cn">
+
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@400;600;900&amp;family=Noto+Sans+SC:wght@400;500;700&amp;display=swap">
+<style>
+:root{
+  --bg:#05070d;
+  --bg-elev:#080d18;
+  --panel:#0c1322;
+  --panel-2:#0f1728;
+  --line:rgba(140,160,200,.14);
+  --line-soft:rgba(140,160,200,.08);
+  --ink:#dfe4ec;
+  --ink-2:#9aa4b6;
+  --ink-3:#667188;
+  --red:#d05b52;
+  --red-soft:rgba(208,91,82,.14);
+  --blue:#6ea7d6;
+  --blue-soft:rgba(110,167,214,.14);
+  --gold:#cda761;
+  --gold-soft:rgba(205,167,97,.15);
+  --purple:#9d80d0;
+  --purple-soft:rgba(157,128,208,.15);
+  --serif:"Noto Serif SC","Songti SC","SimSun",serif;
+  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --maxw:1180px;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --bg-t:rgba(5,7,13,.9);
+  --bg-t2:rgba(5,7,13,.72);
+  --veil-mid:rgba(5,7,13,.55);
+  --veil-end:rgba(5,7,13,.96);
+  --panel-glass:rgba(8,13,24,.9);
+  --panel-glass2:rgba(8,13,24,.75);
+  --tip-bg:rgba(10,16,28,.96);
+  --star:#b8c7dd;
+  --mark-bg:#05070d;
+}
+:root[data-theme="light"]{
+  --bg:#f4efe5;
+  --bg-elev:#faf7ef;
+  --panel:#ffffff;
+  --panel-2:#ece5d6;
+  --line:rgba(40,50,70,.16);
+  --line-soft:rgba(40,50,70,.10);
+  --ink:#1b2129;
+  --ink-2:#4d5a6b;
+  --ink-3:#7d899b;
+  --bg-t:rgba(249,246,238,.92);
+  --bg-t2:rgba(249,246,238,.72);
+  --veil-mid:rgba(244,239,229,.5);
+  --veil-end:rgba(244,239,229,.96);
+  --panel-glass:rgba(255,255,255,.92);
+  --panel-glass2:rgba(255,255,255,.8);
+  --tip-bg:rgba(255,255,255,.97);
+  --star:#7d8899;
+  --mark-bg:#ffffff;
+  --gold:#a9802f;
+  --red:#b34a43;
+  --blue:#3f7ba8;
+  --purple:#7a5cb0;
+  --red-soft:rgba(179,74,67,.12);
+  --blue-soft:rgba(63,123,168,.12);
+  --gold-soft:rgba(169,128,47,.14);
+  --purple-soft:rgba(122,92,176,.13);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.7;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+::selection{background:var(--red-soft);color:#fff}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* ===== 噪点 grain 覆盖 ===== */
+.grain{position:fixed;inset:-50%;z-index:60;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ===== 顶栏 ===== */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  backdrop-filter:blur(12px);
+  background:linear-gradient(180deg,var(--bg-t),var(--bg-t2));
+  border-bottom:1px solid var(--line-soft);
+}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:0 24px;height:62px;
+  display:flex;align-items:center;gap:34px}
+.brand{display:flex;align-items:center;gap:11px;font-family:var(--serif);font-weight:900;font-size:19px;letter-spacing:.06em}
+.brand .mark{width:30px;height:30px;flex:none}
+.brand small{display:block;font-family:var(--sans);font-weight:400;font-size:10px;letter-spacing:.32em;color:var(--ink-3);margin-top:1px}
+.nav{display:flex;gap:4px;margin-left:auto}
+.nav button{
+  padding:8px 15px;border-radius:8px;font-size:14px;color:var(--ink-2);
+  transition:color .2s,background .2s;
+}
+.nav button:hover{color:var(--ink);background:var(--panel)}
+.nav button.active{color:var(--ink);background:var(--panel);box-shadow:inset 0 -2px 0 var(--gold)}
+.nav .sep{width:1px;background:var(--line);margin:6px 8px}
+.nav .meta{font-size:11px;color:var(--ink-3);letter-spacing:.05em;align-self:center;white-space:nowrap}
+.theme-btn{margin-left:6px;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;
+  border:1px solid var(--line);color:var(--ink-2);transition:all .25s;flex:none}
+.theme-btn:hover{border-color:var(--gold);color:var(--gold);transform:rotate(20deg)}
+.theme-btn .sun{display:none}
+[data-theme="light"] .theme-btn .sun{display:block}
+[data-theme="light"] .theme-btn .moon{display:none}
+.rogeda-chip{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.18em;color:var(--ink-3);
+  border:1px solid var(--line-soft);border-radius:20px;padding:5px 13px}
+.rogeda-chip b{color:var(--gold);font-weight:700;letter-spacing:.04em}
+.foot-brand-line{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+
+/* ===== 视图容器 ===== */
+.view{display:none;animation:viewIn .45s var(--ease)}
+.view.active{display:block}
+@keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.section{max-width:var(--maxw);margin:0 auto;padding:64px 24px}
+
+/* ===== 通用标题 ===== */
+.kicker{display:flex;align-items:center;gap:12px;font-size:12px;letter-spacing:.34em;color:var(--gold);text-transform:uppercase;margin-bottom:14px}
+.kicker::before{content:"";width:26px;height:1px;background:var(--gold)}
+h1,h2,h3{font-family:var(--serif);font-weight:900;line-height:1.25}
+.section-title{font-size:clamp(26px,4vw,38px);margin-bottom:10px}
+.section-sub{color:var(--ink-2);max-width:640px;margin-bottom:34px}
+
+/* ===== HOME HERO ===== */
+#view-home .section{padding-top:0}
+.hero{position:relative;min-height:92vh;display:flex;align-items:center;overflow:hidden}
+#heroCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.hero-veil{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 40%,transparent 0%,var(--veil-mid) 72%,var(--veil-end) 100%),
+  linear-gradient(180deg,transparent 55%,var(--bg) 100%)}
+.hero-body{position:relative;z-index:2;max-width:var(--maxw);margin:0 auto;padding:0 24px;width:100%}
+.hero-flag{font-size:12px;letter-spacing:.4em;color:var(--gold);margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.hero-flag::before{content:"";width:34px;height:1px;background:var(--gold)}
+.hero h1{font-size:clamp(54px,11vw,124px);letter-spacing:.04em;line-height:.98}
+.hero h1 .thin{font-weight:400;color:var(--ink-2)}
+.hero-sub{font-family:var(--serif);color:var(--ink-2);font-size:clamp(15px,2.2vw,20px);margin-top:18px;max-width:620px}
+.hero-sub b{color:var(--ink);font-weight:600}
+.hero-stats{display:flex;flex-wrap:wrap;gap:0;margin-top:38px;border-top:1px solid var(--line-soft);max-width:760px}
+.stat{padding:18px 28px 18px 0;border-right:1px solid var(--line-soft);padding-right:30px;margin-right:30px}
+.stat:last-child{border:none;margin-right:0}
+.stat .num{font-family:var(--serif);font-weight:900;font-size:30px;color:var(--ink);font-variant-numeric:tabular-nums}
+.stat .num em{font-style:normal;font-size:15px;color:var(--ink-3);font-family:var(--sans);font-weight:500;margin-left:2px}
+.stat .lbl{font-size:11px;letter-spacing:.2em;color:var(--ink-3);margin-top:4px}
+.hero-cta{margin-top:34px;display:flex;gap:14px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:13px 24px;border-radius:9px;
+  font-size:14.5px;font-weight:500;letter-spacing:.02em;transition:transform .2s var(--ease),box-shadow .2s,border-color .2s,background .2s}
+.btn-primary{background:linear-gradient(180deg,var(--red),#b3463f);color:#fff;box-shadow:0 8px 26px -10px rgba(208,91,82,.6)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-ghost{border:1px solid var(--line);color:var(--ink-2)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-2px)}
+.hero-scroll{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;color:var(--ink-3);font-size:11px;letter-spacing:.28em;display:flex;flex-direction:column;align-items:center;gap:8px}
+.hero-scroll .line{width:1px;height:40px;background:linear-gradient(180deg,var(--gold),transparent)}
+
+/* ===== 三卷卡片 ===== */
+.books-intro{padding-top:20px}
+.books-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:8px}
+@media(max-width:900px){.books-grid{grid-template-columns:1fr}}
+.book-card{position:relative;border:1px solid var(--line);border-radius:14px;padding:26px 24px 24px;
+  background:linear-gradient(180deg,var(--panel),var(--bg-elev));
+  transition:border-color .25s,transform .25s var(--ease);overflow:hidden}
+.book-card:hover{border-color:var(--gold);transform:translateY(-4px)}
+.book-card .no{position:absolute;top:16px;right:20px;font-family:var(--serif);font-weight:900;font-size:52px;color:transparent;
+  -webkit-text-stroke:1px var(--line);line-height:1}
+.book-card .vol{font-size:12px;letter-spacing:.24em;color:var(--ink-3)}
+.book-card h3{font-size:24px;margin:8px 0 4px}
+.book-card .en{font-size:11px;letter-spacing:.12em;color:var(--gold);margin-bottom:12px}
+.book-card p{font-size:13.5px;color:var(--ink-2);line-height:1.75}
+.book-card .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.book-card .tags span{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--panel-2);border:1px solid var(--line-soft);color:var(--ink-2)}
+.book-card .go{margin-top:16px;font-size:13px;color:var(--gold);display:inline-flex;align-items:center;gap:6px}
+.book-card .go svg{transition:transform .2s}
+.book-card:hover .go svg{transform:translateX(3px)}
+
+/* ===== 平台特性（对齐读通鉴结构） ===== */
+.features{padding:20px 0 10px}
+.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:8px}
+@media(max-width:900px){.feature-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.feature-grid{grid-template-columns:1fr}}
+.feature{border:1px solid var(--line-soft);border-radius:12px;padding:20px 18px;background:var(--bg-elev)}
+.feature .ic{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;margin-bottom:12px}
+.feature .ic.red{background:var(--red-soft);color:var(--red)}
+.feature .ic.blue{background:var(--blue-soft);color:var(--blue)}
+.feature .ic.gold{background:var(--gold-soft);color:var(--gold)}
+.feature .ic.purple{background:var(--purple-soft);color:var(--purple)}
+.feature h4{font-family:var(--serif);font-size:16px;margin-bottom:5px}
+.feature p{font-size:12.5px;color:var(--ink-2);line-height:1.7}
+
+/* ===== 阅读视图 ===== */
+.read-layout{display:grid;grid-template-columns:260px 1fr;gap:30px;align-items:start}
+@media(max-width:860px){.read-layout{grid-template-columns:1fr}}
+.read-rail{position:sticky;top:86px}
+@media(max-width:860px){.read-rail{position:static}}
+.rail-card{border:1px solid var(--line);border-radius:12px;background:var(--bg-elev);padding:16px;margin-bottom:18px}
+.rail-card h4{font-size:12px;letter-spacing:.24em;color:var(--ink-3);margin-bottom:12px;font-family:var(--sans);font-weight:500}
+.era-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 12px;border-radius:8px;margin-bottom:3px;
+  color:var(--ink-2);transition:background .2s,color .2s}
+.era-btn:hover{background:var(--panel);color:var(--ink)}
+.era-btn.active{background:var(--panel-2);color:var(--ink)}
+.era-btn .dot{width:9px;height:9px;border-radius:50%;flex:none;border:1.5px solid currentColor;opacity:.8}
+.era-btn .nm{font-family:var(--serif);font-weight:600;font-size:15px}
+.era-btn .book{font-size:11px;color:var(--ink-3);margin-left:auto}
+.book-tag{display:inline-block;font-size:10.5px;padding:1px 8px;border-radius:12px;letter-spacing:.05em}
+.book-tag.b1{color:var(--red);background:var(--red-soft)}
+.book-tag.b2{color:var(--gold);background:var(--gold-soft)}
+.book-tag.b3{color:var(--blue);background:var(--blue-soft)}
+.term{cursor:pointer;border-bottom:1px dashed currentColor;transition:background .15s;border-radius:2px;padding:0 1px}
+.term.p{color:var(--gold)} .term.t{color:var(--blue)} .term.c{color:var(--purple)}
+.term:hover{background:rgba(255,255,255,.06)}
+
+.read-body{min-width:0}
+.era-head{padding-bottom:22px;border-bottom:1px solid var(--line-soft);margin-bottom:26px}
+.era-kicker{display:flex;align-items:center;gap:12px;font-size:12px;letter-spacing:.3em;color:var(--gold);margin-bottom:12px}
+.era-kicker::before{content:"";width:26px;height:1px;background:var(--gold)}
+.era-head h2{font-size:clamp(26px,4vw,40px)}
+.era-head .spanline{color:var(--ink-3);font-family:var(--sans);font-size:13px;letter-spacing:.04em;margin-top:8px}
+.era-head .lead{font-family:var(--serif);color:var(--ink-2);font-size:16.5px;line-height:1.9;margin-top:18px}
+.era-head .lead .term{font-family:var(--serif)}
+
+.read-block{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:26px;margin-bottom:20px}
+.read-block .h{display:flex;align-items:center;gap:11px;font-family:var(--serif);font-weight:600;font-size:18px;margin-bottom:16px}
+.read-block .h .idx{font-family:var(--mono);font-size:12px;color:var(--gold);letter-spacing:.1em}
+.read-block p{color:var(--ink-2);font-size:15px;line-height:2;margin-bottom:12px}
+.read-block p:last-child{margin-bottom:0}
+.read-block .note{color:var(--ink-3);font-size:13px;font-family:var(--serif);font-style:italic;border-left:2px solid var(--gold);padding-left:14px;margin-top:14px}
+.read-block.quote{background:linear-gradient(180deg,var(--panel),var(--bg-elev));border-left:3px solid var(--gold)}
+.read-block.quote .big{font-family:var(--serif);font-weight:600;font-size:20px;line-height:1.7;color:var(--ink);margin-bottom:10px}
+.read-block.quote .src{font-size:12px;color:var(--ink-3);letter-spacing:.1em}
+
+.events{display:flex;flex-direction:column;gap:0;margin-top:4px}
+.event{display:grid;grid-template-columns:52px 1fr;gap:16px;padding:15px 4px;border-top:1px solid var(--line-soft);align-items:baseline}
+.event:first-child{border-top:none}
+.event .no{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.05em}
+.event .body b{color:var(--ink);font-weight:600;font-family:var(--serif);font-size:15.5px}
+.event .body span{display:block;color:var(--ink-2);font-size:13.5px;margin-top:3px;line-height:1.7}
+
+.gloss-toggle{margin:22px 0 0;width:100%;text-align:left}
+.gloss-toggle .bar{display:flex;align-items:center;gap:10px;padding:14px 18px;border:1px solid var(--line);border-radius:10px;color:var(--ink-2);font-size:14px;background:var(--bg-elev);transition:border-color .2s}
+.gloss-toggle .bar:hover{border-color:var(--gold);color:var(--ink)}
+.gloss-toggle .bar .arr{margin-left:auto;transition:transform .25s}
+.gloss-toggle.open .bar .arr{transform:rotate(180deg)}
+.gloss-body{display:none;padding:18px 18px 6px}
+.gloss-toggle.open .gloss-body{display:block}
+.gloss-body p{color:var(--ink-2);font-size:14px;line-height:1.9;margin-bottom:12px;font-family:var(--serif)}
+.gloss-body p b{color:var(--ink)}
+
+/* ===== 时间线 ===== */
+.tl-controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:34px}
+.tl-chip{padding:7px 14px;border-radius:20px;border:1px solid var(--line);font-size:12.5px;color:var(--ink-2);transition:all .2s}
+.tl-chip:hover{border-color:var(--gold);color:var(--ink)}
+.tl-chip.active{background:var(--gold-soft);border-color:var(--gold);color:var(--gold)}
+.timeline{position:relative;margin-left:14px}
+.timeline::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:1px;
+  background:linear-gradient(180deg,var(--red),var(--gold),var(--blue),var(--purple))}
+.tl-era{position:relative;padding:0 0 8px 44px;margin-bottom:6px}
+.tl-era::before{content:"";position:absolute;left:3px;top:10px;width:11px;height:11px;border-radius:50%;
+  background:var(--bg);border:2.5px solid var(--ac,#9aa4b6);z-index:1}
+.tl-era .tl-body{border:1px solid var(--line);border-radius:12px;background:var(--bg-elev);overflow:hidden;transition:border-color .2s}
+.tl-era .tl-body:hover{border-color:var(--line)}
+.tl-era .tl-head{display:flex;align-items:baseline;gap:14px;padding:16px 20px;cursor:pointer;flex-wrap:wrap}
+.tl-era .tl-year{font-family:var(--mono);font-size:12.5px;color:var(--ac,#9aa4b6);letter-spacing:.04em;white-space:nowrap}
+.tl-era .tl-name{font-family:var(--serif);font-weight:600;font-size:19px}
+.tl-era .tl-count{font-size:12px;color:var(--ink-3);margin-left:auto}
+.tl-era .tl-arrow{margin-left:6px;transition:transform .25s;color:var(--ink-3)}
+.tl-era.open .tl-arrow{transform:rotate(90deg)}
+.tl-era .tl-events{display:none;border-top:1px solid var(--line-soft);padding:6px 20px 14px}
+.tl-era.open .tl-events{display:block}
+.tl-event{padding:12px 2px;border-top:1px solid var(--line-soft)}
+.tl-event:first-child{border-top:none}
+.tl-event .ye{font-family:var(--mono);font-size:12px;color:var(--gold);margin-bottom:3px}
+.tl-event .tt{font-family:var(--serif);font-weight:600;font-size:15.5px;color:var(--ink);margin-bottom:3px}
+.tl-event .ds{font-size:13.5px;color:var(--ink-2);line-height:1.7}
+
+/* ===== 星图 ===== */
+.map-wrap{border:1px solid var(--line);border-radius:14px;background:var(--bg-elev);overflow:hidden}
+.map-stage{position:relative;width:100%;min-height:560px}
+#mapSvg{width:100%;height:auto;display:block}
+.map-node{cursor:pointer;transition:opacity .2s}
+.map-node text{font-family:var(--sans);font-size:13px;fill:var(--ink);pointer-events:none}
+.map-node .sub{font-size:11px;fill:var(--ink-3)}
+.map-node:hover{opacity:.8}
+.map-panel{position:absolute;right:18px;top:18px;width:min(360px,80%);max-height:70%;overflow:auto;
+  border:1px solid var(--line);border-radius:12px;background:var(--panel-glass);backdrop-filter:blur(8px);
+  padding:20px;display:none;z-index:3}
+.map-panel.show{display:block;animation:viewIn .3s var(--ease)}
+.map-panel h4{font-family:var(--serif);font-size:19px;margin-bottom:4px}
+.map-panel .cat{font-size:11px;letter-spacing:.2em;color:var(--ac,#cda761);margin-bottom:12px}
+.map-panel p{font-size:13.5px;color:var(--ink-2);line-height:1.8}
+.map-panel .dim{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-3);border-top:1px solid var(--line-soft);padding-top:10px;margin-top:12px}
+.map-panel .close{position:absolute;top:12px;right:14px;color:var(--ink-3);font-size:16px}
+.map-legend{position:absolute;left:18px;bottom:18px;display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-2);
+  background:var(--panel-glass2);padding:8px 14px;border-radius:8px;border:1px solid var(--line-soft)}
+.map-legend i{display:inline-block;width:18px;height:2px;vertical-align:middle;margin-right:6px}
+
+/* ===== 设定词典 ===== */
+.filter-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}
+.filter-bar .f{padding:7px 15px;border-radius:20px;border:1px solid var(--line);font-size:13px;color:var(--ink-2);transition:all .2s}
+.filter-bar .f:hover{border-color:var(--gold);color:var(--ink)}
+.filter-bar .f.active{background:var(--gold-soft);border-color:var(--gold);color:var(--gold)}
+.gloss-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:980px){.gloss-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.gloss-grid{grid-template-columns:1fr}}
+.g-term{border:1px solid var(--line-soft);border-radius:12px;padding:20px 18px;background:var(--bg-elev);transition:border-color .2s,transform .2s var(--ease)}
+.g-term:hover{border-color:var(--ac,#cda761);transform:translateY(-3px)}
+.g-term .g-cat{font-size:11px;letter-spacing:.18em;color:var(--ink-3);margin-bottom:8px}
+.g-term h4{font-family:var(--serif);font-size:17.5px;margin-bottom:8px}
+.g-term p{font-size:13.5px;color:var(--ink-2);line-height:1.75}
+
+/* ===== 人物 ===== */
+.char-group{margin-bottom:38px}
+.char-group .gh{display:flex;align-items:center;gap:12px;font-family:var(--serif);font-weight:600;font-size:20px;margin-bottom:18px}
+.char-group .gh .bar{width:26px;height:3px;background:var(--gc,#cda761);border-radius:2px}
+.char-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:980px){.char-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.char-grid{grid-template-columns:1fr}}
+.char-card{border:1px solid var(--line-soft);border-radius:12px;padding:20px;background:var(--bg-elev);transition:border-color .2s,transform .2s var(--ease)}
+.char-card:hover{border-color:var(--line);transform:translateY(-3px)}
+.char-card .top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.char-card .av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-family:var(--serif);font-weight:600;font-size:17px;flex:none}
+.char-card h4{font-family:var(--serif);font-size:17.5px}
+.char-card .role{font-size:11.5px;color:var(--ink-3);letter-spacing:.04em}
+.char-card .fate{font-size:11px;margin-left:auto;padding:2px 9px;border-radius:12px;white-space:nowrap}
+.fate.survive{color:#7ecf9d;background:rgba(126,207,157,.12)}
+.fate.sacrifice{color:var(--red);background:var(--red-soft)}
+.fate.unknown{color:var(--gold);background:var(--gold-soft)}
+.char-card .bio{font-size:13.5px;color:var(--ink-2);line-height:1.75;min-height:44px}
+.char-card .deed{margin-top:12px;padding-top:12px;border-top:1px solid var(--line-soft);font-size:12.5px;color:var(--ink-3);line-height:1.7}
+.char-card .deed b{color:var(--gold);font-weight:600}
+
+/* ===== footer ===== */
+footer{border-top:1px solid var(--line-soft);margin-top:40px;padding:40px 24px 56px}
+.footer-inner{max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap}
+footer .fbrand{font-family:var(--serif);font-weight:900;font-size:18px;letter-spacing:.06em}
+footer .fdisc{font-size:12px;color:var(--ink-3);margin-top:8px;max-width:520px;line-height:1.8}
+footer .fstat{display:inline-flex;align-items:center;gap:7px;margin-top:14px;font-size:12px;color:var(--ink-3);letter-spacing:.04em}
+footer .fstat .fvdot{width:5px;height:5px;border-radius:50%;background:var(--red);animation:fvPulse 2.6s ease-in-out infinite}
+footer .fstat b{font-family:var(--serif);font-size:15px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:.02em;margin:0 1px}
+@keyframes fvPulse{0%,100%{opacity:.4;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
+@media (prefers-reduced-motion:reduce){footer .fstat .fvdot{animation:none;opacity:.85}}
+footer .fnav{display:flex;gap:18px;font-size:13px;color:var(--ink-2)}
+footer .fnav button:hover{color:var(--gold)}
+
+/* tooltip */
+#tip{position:fixed;z-index:80;max-width:280px;background:var(--tip-bg);border:1px solid var(--line);
+  border-radius:10px;padding:12px 14px;font-size:13px;color:var(--ink-2);line-height:1.7;box-shadow:0 14px 40px -18px rgba(0,0,0,.8);display:none;pointer-events:none}
+#tip .tt{font-family:var(--serif);font-weight:600;color:var(--ink);font-size:14.5px;margin-bottom:3px}
+#tip .tc{font-size:10.5px;letter-spacing:.18em;margin-bottom:6px;opacity:.8}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001s!important;transition-duration:.001s!important}
+  html{scroll-behavior:auto}
+}
+
+/* ================= 原文阅读器 ================= */
+:root{--rfs:17px}
+.reader{display:grid;grid-template-columns:262px 1fr;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel);margin-top:26px}
+.reader-rail{border-right:1px solid var(--line);background:var(--panel-2);display:flex;flex-direction:column;max-height:80vh}
+.reader-books{display:flex;gap:6px;padding:12px;border-bottom:1px solid var(--line-soft)}
+.reader-books button{flex:1;font-size:12px;padding:7px 4px;border-radius:8px;color:var(--ink-3);border:1px solid transparent;font-family:inherit}
+.reader-books button.active{color:var(--gold);border-color:var(--line);background:var(--bg-elev)}
+.reader-chapters{overflow:auto;padding:8px;flex:1}
+.reader-chapters button{display:block;width:100%;text-align:left;font-size:13px;padding:8px 10px;border-radius:8px;color:var(--ink-2);line-height:1.45;font-family:inherit}
+.reader-chapters button:hover{background:var(--bg-elev);color:var(--ink)}
+.reader-chapters button.active{background:var(--bg-elev);color:var(--gold)}
+.reader-main{display:flex;flex-direction:column;min-width:0}
+.reader-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 22px;border-bottom:1px solid var(--line-soft);background:var(--panel-2)}
+.reader-current{font-size:12.5px;color:var(--ink-2);letter-spacing:.03em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.reader-tools{display:flex;gap:6px;flex:none}
+.reader-tools button{font-size:12px;border:1px solid var(--line);border-radius:7px;padding:4px 10px;color:var(--ink-2);font-family:inherit}
+.reader-tools button:hover{border-color:var(--gold);color:var(--gold)}
+.reader-content{padding:34px 42px 14px;max-height:66vh;overflow:auto;font-family:"Noto Serif SC","Songti SC",serif;font-size:var(--rfs);line-height:1.95;color:var(--ink);text-align:justify}
+.reader-content .ch-title{font-size:1.32em;font-weight:600;letter-spacing:.04em;text-indent:0;margin:0 0 1.3em;color:var(--ink)}
+.reader-content p{margin:0 0 .95em;text-indent:2em}
+.reader-pager{display:flex;justify-content:space-between;padding:12px 22px;border-top:1px solid var(--line-soft)}
+.reader-pager button{font-size:13px;color:var(--ink-2);border:1px solid var(--line);border-radius:8px;padding:7px 14px;font-family:inherit}
+.reader-pager button:hover:not(:disabled){border-color:var(--gold);color:var(--gold)}
+.reader-pager button:disabled{opacity:.32;cursor:default}
+@media(max-width:860px){.reader{grid-template-columns:1fr}.reader-rail{max-height:none;border-right:none;border-bottom:1px solid var(--line)}.reader-chapters{max-height:210px}.reader-content{max-height:none;padding:24px 20px 8px}}
+
+#heroGL{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#heroCanvas{position:absolute;inset:0;z-index:1;pointer-events:none}
+
+.era-chart-wrap{margin:22px 0 26px;border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:14px 10px 6px}
+.era-chart{width:100%;height:390px}
+.era-chart-hint{font-size:11.5px;color:var(--ink-3);letter-spacing:.04em;padding:2px 8px 8px;text-align:right}
+@media(max-width:640px){.era-chart{height:330px}}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#home" data-nav="home">
+      <svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><circle cx="30" cy="30" r="15" fill="none" stroke="#d05b52" stroke-width="3"/><circle cx="45" cy="18" r="7" fill="none" stroke="#cda761" stroke-width="3"/><circle cx="50" cy="44" r="4" fill="none" stroke="#6ea7d6" stroke-width="3"/></svg>
+      <span>读三体<small>READ·SANTI</small></span>
+    </a>
+    <nav class="nav" aria-label="主导航">
+      <span class="sep"></span>
+      <button data-nav="home" class="active">首页</button>
+      <button data-nav="read">导读</button>
+      <button data-nav="text">原文</button>
+      <button data-nav="timeline">时间线</button>
+      <button data-nav="map">星图</button>
+      <button data-nav="glossary">设定集</button>
+      <button data-nav="characters">人物</button>
+      <span class="sep"></span>
+      <span class="meta">从阅读，到体验</span>
+    </nav>
+    <button id="themeBtn" class="theme-btn" aria-label="切换黑白主题" title="切换黑白主题">
+      <svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 13.5A7.5 7.5 0 0 1 10.5 4 7.5 7.5 0 1 0 20 13.5z"/></svg>
+      <svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+  <!-- ===== 视图：首页 ===== -->
+  <section class="view active" id="view-home">
+    <div class="hero">
+      <canvas id="heroGL" aria-hidden="true"></canvas>
+      <canvas id="heroCanvas" aria-hidden="true"></canvas>
+      <div class="hero-veil" aria-hidden="true"></div>
+      <div class="hero-body">
+        <div class="hero-flag">
+          <span class="rogeda-chip"><svg width="13" height="13" viewBox="0 0 64 64" aria-hidden="true"><circle cx="30" cy="30" r="15" fill="none" stroke="var(--red)" stroke-width="4"/><circle cx="45" cy="18" r="7" fill="none" stroke="var(--gold)" stroke-width="4"/><circle cx="50" cy="44" r="4" fill="none" stroke="var(--blue)" stroke-width="4"/></svg><b>ROGEDA ISLAND</b> PRESENTS</span>
+        </div>
+        <div class="hero-flag" style="margin-top:-6px">SAN-TI · A DIGITAL READING &amp; EXPERIENCE PLATFORM</div>
+        <h1>读<span class="thin">三体</span></h1>
+        <p class="hero-sub">一部宇宙尺度编年体史诗。<b>从阅读，到体验</b>——按纪元编年的导读、纪元大事年表、星图、设定词典与人物图谱，一站读懂刘慈欣《三体》三部曲的世界观。</p>
+        <div class="hero-stats">
+          <div class="stat"><div class="num">3<em>部曲</em></div><div class="lbl">地球往事 · 黑暗森林 · 死神永生</div></div>
+          <div class="stat"><div class="num">6<em>纪元</em></div><div class="lbl">危机至归零</div></div>
+          <div class="stat"><div class="num">19<em>人物</em></div><div class="lbl">地球 · 三体 · 宇宙</div></div>
+          <div class="stat"><div class="num">32<em>设定</em></div><div class="lbl">文明 · 武器 · 法则</div></div>
+        </div>
+        <div class="hero-cta">
+          <button class="btn btn-primary" data-nav="text">阅读原文 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2"/></svg></button>
+          <button class="btn btn-ghost" data-nav="read">纪元导读</button>
+        </div>
+      </div>
+      <div class="hero-scroll" aria-hidden="true">SCROLL<div class="line"></div></div>
+    </div>
+
+    <div class="section books-intro">
+      <div class="kicker">THE TRILOGY · 三部曲</div>
+      <h2 class="section-title">三卷书，一部宇宙史</h2>
+      <p class="section-sub">如同《资治通鉴》以编年串联千年兴替，《三体》以纪元展开宇宙尺度下的文明存亡。按下卷可进入对应纪元的导读。</p>
+      <div class="books-grid" id="booksGrid"></div>
+    </div>
+
+    <div class="section features">
+      <div class="kicker">FROM READING TO EXPERIENCE · 从阅读到体验</div>
+      <h2 class="section-title">不止于读</h2>
+      <p class="section-sub">复刻「读通鉴」的六种阅读与体验方式，迁移到三体的世界观之中。</p>
+      <div class="feature-grid" id="featureGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===== 视图：导读 ===== -->
+  <section class="view" id="view-read">
+    <div class="section read-layout" style="padding-top:48px">
+      <aside class="read-rail">
+        <div class="rail-card">
+          <h4>按纪元编年</h4>
+          <div id="eraList"></div>
+        </div>
+      </aside>
+      <article class="read-body" id="eraContent"></article>
+    </div>
+  </section>
+
+  <!-- ===== 视图：时间线 ===== -->
+  <section class="view" id="view-timeline">
+    <div class="section">
+      <div class="kicker">CHRONICLE · 纪元大事年表</div>
+      <h2 class="section-title">宇宙尺度下的时间之轴</h2>
+      <p class="section-sub">从公元纪年的红岸基地，到归零者重启宇宙的终极时刻。点击任一纪元展开其关键事件。</p>
+      <div class="era-chart-wrap"><div class="era-chart" id="eraChart"></div><div class="era-chart-hint">拖拽或滚轮缩放时间轴 · 点击纪元色带进入导读</div></div>
+      <div class="tl-controls" id="tlControls"></div>
+      <div class="timeline" id="timeline"></div>
+    </div>
+  </section>
+
+  <!-- ===== 视图：星图 ===== -->
+  <section class="view" id="view-map">
+    <div class="section">
+      <div class="kicker">STAR MAP · 宇宙星图</div>
+      <h2 class="section-title">黑暗森林中的坐标</h2>
+      <p class="section-sub">地球、三体世界与银河深处的神级文明——点击节点查看设定，体会黑暗森林法则下的沉默。</p>
+      <div class="map-wrap">
+        <div class="map-stage">
+          <svg id="mapSvg" viewBox="0 0 1000 560" role="img" aria-label="三体宇宙星图示意"></svg>
+          <div class="map-panel" id="mapPanel">
+            <button class="close" id="mapClose" aria-label="关闭">×</button>
+            <div id="mapPanelBody"></div>
+          </div>
+          <div class="map-legend" aria-hidden="true">
+            <span><i style="background:var(--blue)"></i>地球文明</span>
+            <span><i style="background:var(--red)"></i>三体文明</span>
+            <span><i style="background:var(--purple)"></i>神级文明</span>
+            <span><i style="background:var(--gold)"></i>关键坐标</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 视图：设定集 ===== -->
+  <section class="view" id="view-glossary">
+    <div class="section">
+      <div class="kicker">LEXICON · 设定词典</div>
+      <h2 class="section-title">三体世界的名词注疏</h2>
+      <p class="section-sub">对应「读通鉴」的官职与专名说明，这里解释三体宇宙中的文明、武器、计划与法则。</p>
+      <div class="filter-bar" id="filterBar"></div>
+      <div class="gloss-grid" id="glossGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===== 视图：人物 ===== -->
+  <section class="view" id="view-characters">
+    <div class="section">
+      <div class="kicker">CAST · 人物图谱</div>
+      <h2 class="section-title">命运坐标上的行者</h2>
+      <p class="section-sub">按阵营划分的核心人物。命运色标：绿=幸存延续，红=牺牲献身，金=结局未知。</p>
+      <div id="charGroups"></div>
+    </div>
+  </section>
+
+  <!-- ===== 视图：原文全文 ===== -->
+  <section class="view" id="view-text">
+    <div class="section">
+      <div class="kicker">ORIGINAL TEXT · 原著全文</div>
+      <h2 class="section-title">从字里行间，进入三体世界</h2>
+      <p class="section-sub">三部曲全文按「书 → 章」分段收录，共 70 章。左侧选书选章，右侧沉浸阅读；支持字号调节，随全站黑/白主题切换。</p>
+      <div class="reader">
+        <aside class="reader-rail">
+          <div class="reader-books" id="readerBooks"></div>
+          <div class="reader-chapters" id="readerChapters"></div>
+        </aside>
+        <article class="reader-main">
+          <div class="reader-toolbar">
+            <div class="reader-current" id="readerCurrent">—</div>
+            <div class="reader-tools">
+              <button id="fontDown" title="减小字号">A−</button>
+              <button id="fontUp" title="增大字号">A＋</button>
+            </div>
+          </div>
+          <div class="reader-content" id="readerContent"></div>
+          <div class="reader-pager">
+            <button id="prevCh">← 上一章</button>
+            <button id="nextCh">下一章 →</button>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="foot-brand-line">
+        <div class="fbrand">读三体 · READ SANTI</div>
+        <span class="rogeda-chip"><svg width="12" height="12" viewBox="0 0 64 64" aria-hidden="true"><circle cx="30" cy="30" r="15" fill="none" stroke="var(--red)" stroke-width="4"/><circle cx="45" cy="18" r="7" fill="none" stroke="var(--gold)" stroke-width="4"/><circle cx="50" cy="44" r="4" fill="none" stroke="var(--blue)" stroke-width="4"/></svg>Rogeda Island 出品</span>
+      </div>
+      <p class="fdisc">非官方爱好者体验站。内容为对刘慈欣《三体》三部曲的导读、梳理与解读，人物与设定整理自原著公开信息；站内文字多为编者转述与解读，站内并收录三部曲原文全文，仅供个人阅读与学习；著作权归刘慈欣及出版方所有，请勿用于商业用途或公开传播。愿你在黑暗森林中，保持好奇。</p>
+      <p class="fstat" aria-live="polite"><span class="fvdot" aria-hidden="true"></span><span id="visitLabel">全站访问</span><b id="visitCount">—</b>次</p>
+    </div>
+    <nav class="fnav" aria-label="页脚导航">
+      <button data-nav="home">首页</button>
+      <button data-nav="read">导读</button>
+      <button data-nav="text">原文</button>
+      <button data-nav="timeline">时间线</button>
+      <button data-nav="map">星图</button>
+      <button data-nav="glossary">设定集</button>
+      <button data-nav="characters">人物</button>
+    </nav>
+  </div>
+</footer>
+
+<div id="tip" role="tooltip"></div>
+<script src="./assets/three.min.js"></script>
+<script src="./assets/echarts.min.js"></script>
+<script src="./assets/santi-text.js"></script>
+<script src="./assets/app.js"></script>
+</body>
+</html>
