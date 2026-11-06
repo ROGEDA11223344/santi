@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>坐标丢失 · 读三体</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2305070d'/%3E%3Ccircle cx='30' cy='30' r='15' fill='none' stroke='%23d05b52' stroke-width='3'/%3E%3Ccircle cx='45' cy='18' r='7' fill='none' stroke='%23cda761' stroke-width='3'/%3E%3Ccircle cx='50' cy='44' r='4' fill='none' stroke='%236ea7d6' stroke-width='3'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#05070d; --ink:#dfe4ec; --ink-2:#9aa4b6; --ink-3:#667188;
+    --red:#d05b52; --gold:#cda761; --line:rgba(140,160,200,.14);
+    --serif:"Noto Serif SC","Songti SC","SimSun",serif;
+    --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    min-height:100vh;background:var(--bg);color:var(--ink);
+    font-family:var(--sans);display:flex;align-items:center;justify-content:center;
+    padding:32px;overflow:hidden;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;
+    background:
+      radial-gradient(circle at 22% 28%,rgba(208,91,82,.10),transparent 46%),
+      radial-gradient(circle at 78% 72%,rgba(110,167,214,.09),transparent 44%),
+      radial-gradient(circle at 50% 50%,transparent 42%,rgba(0,0,0,.55) 100%);
+  }
+  .wrap{position:relative;max-width:520px;text-align:center;z-index:2}
+  .brand{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:var(--serif);font-weight:900;font-size:14px;letter-spacing:.24em;
+    color:var(--ink-3);margin-bottom:34px;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 12px var(--red)}
+  .code{
+    font-family:var(--serif);font-weight:900;font-size:64px;line-height:1;
+    color:var(--ink);letter-spacing:.04em;margin-bottom:10px;
+  }
+  .code span{color:var(--red)}
+  h1{font-family:var(--serif);font-size:24px;font-weight:600;letter-spacing:.06em;margin:18px 0 12px}
+  p{color:var(--ink-2);font-size:14px;line-height:1.9;max-width:420px;margin:0 auto}
+  .rule{width:64px;height:1px;background:var(--line);margin:26px auto}
+  .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+  a{
+    display:inline-block;padding:11px 22px;border-radius:2px;text-decoration:none;
+    font-size:13px;letter-spacing:.08em;transition:.2s;
+  }
+  a.primary{background:var(--ink);color:#05070d;font-weight:600}
+  a.primary:hover{background:#fff}
+  a.ghost{border:1px solid var(--line);color:var(--ink-2)}
+  a.ghost:hover{border-color:rgba(205,167,97,.5);color:var(--gold)}
+  .foot{margin-top:38px;font-size:11px;letter-spacing:.18em;color:var(--ink-3)}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand"><i class="dot"></i>ROGEDA ISLAND</div>
+    <div class="code">4<span>0</span>4</div>
+    <h1>这颗星球不在星图上</h1>
+    <p>你要找的坐标超出了当前可观测宇宙。可能是链接失效，也可能是这片星域还没被点亮。</p>
+    <div class="rule"></div>
+    <div class="actions">
+      <a class="primary" href="/" id="home">回到首页重新定位</a>
+      <a class="ghost" href="https://github.com/ROGEDA11223344/santi" target="_blank" rel="noopener">查看源码</a>
+    </div>
+    <div class="foot">读三体 · READ SANTI</div>
+  </div>
+<script>
+  (function(){
+    var l=document.getElementById('home');
+    if(location.hostname.slice(-10)==='github.io'){
+      var seg=location.pathname.split('/')[1];
+      if(seg) l.href='/'+seg+'/';
+    }
+  })();
+</script>
+</body>
+</html>
